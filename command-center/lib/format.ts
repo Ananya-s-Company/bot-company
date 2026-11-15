@@ -19,6 +19,16 @@ const cad = new Intl.NumberFormat("en-US", { style: "currency", currency: "CAD" 
 
 export const PENDING = "Pending";
 
+/**
+ * Display rule for any value: missing (null, undefined, empty text) shows "Pending"; a
+ * real 0 shows "0". Never use truthiness (`v || PENDING`) for values: 0 is data.
+ */
+export function displayValue(v: string | number | null | undefined): string {
+  if (v == null) return PENDING;
+  if (typeof v === "number") return Number.isFinite(v) ? String(v) : PENDING;
+  return v.trim() === "" ? PENDING : v;
+}
+
 export function formatCost(v: number | null): string {
   return v == null ? PENDING : cad.format(v);
 }

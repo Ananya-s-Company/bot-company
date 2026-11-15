@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { currentSession } from "@/lib/auth";
 import "./globals.css";
 
-export const metadata: Metadata = { title: "Command Center" };
+export const metadata: Metadata = { title: "Command Center", robots: { index: false, follow: false } };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Navigation only for a full Owner session; the login and enrolment pages show none.
+  const s = await currentSession();
+  const signedIn = s?.kind === "full";
   return (
     <html lang="en">
       <body>
@@ -13,10 +17,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="font-semibold">
               Command Center
             </Link>
-            <nav className="flex gap-4 text-sm text-subtle">
-              <Link href="/" className="hover:text-ink">Home</Link>
-              <Link href="/decisions" className="hover:text-ink">Decisions</Link>
-            </nav>
+            {signedIn && (
+              <nav className="flex items-center gap-4 text-sm text-subtle">
+                <Link href="/" className="hover:text-ink">Home</Link>
+                <Link href="/decisions" className="hover:text-ink">Decisions</Link>
+                <Link href="/account" className="hover:text-ink">Security</Link>
+                {/* AC6: a real POST navigation so the server destroys the session and clears caches. */}
+                <form method="post" action="/logout">
+                  <button type="submit" className="hover:text-ink">Sign out</button>
+                </form>
+              </nav>
+            )}
           </div>
         </header>
         <main className="mx-auto max-w-7xl px-gutter py-section">{children}</main>

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { FilterBar } from "@/components/FilterBar";
 import { IdeaCard } from "@/components/IdeaCard";
 import { SummaryStrip } from "@/components/SummaryStrip";
+import { requireOwner } from "@/lib/auth";
 import { FILTER_COOKIE, applyFilters, parseFilters } from "@/lib/board";
 import { STAGES } from "@/lib/data/types";
 import { getData } from "@/lib/data";
@@ -9,6 +10,7 @@ import { getData } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  await requireOwner("/"); // AC1: before any data is read
   const data = getData();
   // Read the summary first (it compares against the previous visit), then record this visit.
   const summary = data.homeSummary();

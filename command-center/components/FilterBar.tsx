@@ -1,6 +1,7 @@
 import { applyFilters, resetFilters } from "@/app/actions";
 import type { BoardFilters } from "@/lib/board";
 import { RISK_LABELS, RISK_RATINGS, STAGES } from "@/lib/data/types";
+import { toPlainText } from "@/lib/sanitize";
 
 const control = "rounded-control border border-line bg-surface px-2 py-1 text-sm";
 
@@ -31,7 +32,9 @@ export function FilterBar({ filters, owners }: { filters: BoardFilters; owners: 
         <select name="owner" defaultValue={filters.owner} className={control}>
           <option value="">All</option>
           {owners.map((o) => (
-            <option key={o}>{o}</option>
+            <option key={o} value={o}>
+              {toPlainText(o)}
+            </option>
           ))}
         </select>
       </label>
